@@ -6,9 +6,9 @@ import { useToast } from '../components/Toast';
 import { ContractStatus } from '../models';
 import { getAvailableTransitions, getStatusColor } from '../utils/lifecycle';
 import {
-    ChevronLeft, CheckCircle, XCircle, Clock,
-    FileSignature, AlertTriangle, Download,
-    MoreVertical, FileText
+    ChevronLeft, CheckCircle, XCircle,
+    FileSignature, Download,
+    FileText
 } from 'lucide-react';
 import Dropdown from '../components/Dropdown';
 
@@ -18,8 +18,7 @@ const ContractView: React.FC = () => {
     const { getContractById, updateContract } = useContractStore();
     const { getBlueprintById } = useBlueprintStore();
     const { addToast } = useToast();
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isDrawing, setIsDrawing] = useState(false);
+    const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
 
     const contract = getContractById(id!);
 
@@ -27,8 +26,9 @@ const ContractView: React.FC = () => {
         return <div style={{ padding: '2rem', textAlign: 'center' }}>Contract not found</div>;
     }
 
-    const blueprint = getBlueprintById(contract.blueprintId);
-    if (!blueprint) return <div>Blueprint not found</div>;
+    const mapBlueprint = getBlueprintById(contract.blueprintId);
+    // Handle edge case where blueprint might be deleted or missing
+    const blueprint = mapBlueprint || { name: 'Unknown Blueprint', fields: [] };
 
     const transitions = getAvailableTransitions(contract.status);
 
@@ -41,44 +41,18 @@ const ContractView: React.FC = () => {
         updateContract({ ...contract, fields: newFields });
     };
 
+    const handleSignatureSave = (fieldId: string, name: string) => {
+        if (!name.trim()) {
+            setEditingFieldId(null); // Cancel if empty
+            return;
+        }
+        handleFieldChange(fieldId, `${name}\n${new Date().toLocaleString()}`);
+        setEditingFieldId(null);
+    };
+
     const handleStatusChange = (newStatus: string) => {
         updateContract({ ...contract, status: newStatus as ContractStatus });
         addToast(`Contract marked as ${newStatus}`, 'success');
-    };
-
-    // Signature Pad Logic 
-    const startDrawing = (e: React.MouseEvent) => {
-        if (contract.status !== ContractStatus.SENT && contract.status !== ContractStatus.APPROVED) return;
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        setIsDrawing(true);
-        ctx.beginPath();
-        const rect = canvas.getBoundingClientRect();
-        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    };
-
-    const draw = (e: React.MouseEvent) => {
-        if (!isDrawing) return;
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-        const rect = canvas.getBoundingClientRect();
-        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        ctx.stroke();
-    };
-
-    const stopDrawing = () => {
-        setIsDrawing(false);
-    };
-
-    const clearSignature = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx?.clearRect(0, 0, canvas.width, canvas.height);
     };
 
     return (
@@ -246,34 +220,96 @@ const ContractView: React.FC = () => {
                                     )}
 
                                     {field.type === 'signature' && (
-                                        <div style={{ border: '2px dashed #cbd5e1', borderRadius: '4px', background: '#f8fafc', position: 'relative' }}>
-                                            <canvas
-                                                ref={canvasRef}
-                                                width={220}
-                                                height={100}
-                                                style={{ cursor: 'crosshair', display: 'block' }}
-                                                onMouseDown={startDrawing}
-                                                onMouseMove={draw}
-                                                onMouseUp={stopDrawing}
-                                                onMouseLeave={stopDrawing}
-                                            />
-                                            <div style={{
-                                                position: 'absolute', bottom: '4px', right: '4px',
-                                                fontSize: '0.65rem', color: '#94a3b8', pointerEvents: 'none'
-                                            }}>
-                                                Sign above
-                                            </div>
-                                            {(contract.status === ContractStatus.SENT || contract.status === ContractStatus.APPROVED) && (
+                                        <div style={{
+                                            border: field.value || editingFieldId === field.id ? '2px solid transparent' : '2px dashed #cbd5e1',
+                                            borderRadius: '8px',
+                                            background: field.value ? 'rgba(0, 255, 0, 0.05)' : '#f8fafc',
+                                            height: '100%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            position: 'relative',
+                                            cursor: ([ContractStatus.CREATED, ContractStatus.SENT, ContractStatus.APPROVED].includes(contract.status)) && !field.value && editingFieldId !== field.id ? 'pointer' : 'default',
+                                            transition: 'all 0.2s'
+                                        }}
+                                            onClick={() => {
+                                                const isEditable = [ContractStatus.CREATED, ContractStatus.SENT, ContractStatus.APPROVED].includes(contract.status);
+                                                // Start editing if editable, not already having a value, and not currently editing
+                                                if (isEditable && !field.value && editingFieldId !== field.id) {
+                                                    setEditingFieldId(field.id);
+                                                }
+                                            }}
+                                        >
+                                            {/* Clear Button */}
+                                            {field.value && [ContractStatus.CREATED, ContractStatus.SENT, ContractStatus.APPROVED].includes(contract.status) && (
                                                 <button
-                                                    onClick={clearSignature}
-                                                    style={{
-                                                        position: 'absolute', top: '4px', right: '4px',
-                                                        background: 'rgba(0,0,0,0.1)', border: 'none', borderRadius: '4px',
-                                                        padding: '2px 6px', fontSize: '0.65rem', color: '#64748b', cursor: 'pointer'
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleFieldChange(field.id, '');
                                                     }}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '4px', right: '4px',
+                                                        background: 'rgba(0,0,0,0.05)', border: 'none', borderRadius: '4px',
+                                                        cursor: 'pointer', padding: '4px',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        color: '#64748b'
+                                                    }}
+                                                    title="Clear Signature"
                                                 >
-                                                    Clear
+                                                    <XCircle size={14} />
                                                 </button>
+                                            )}
+
+                                            {/* Content */}
+                                            {editingFieldId === field.id ? (
+                                                <input
+                                                    autoFocus
+                                                    type="text"
+                                                    placeholder="Type name..."
+                                                    style={{
+                                                        fontFamily: '"Brush Script MT", "Cursive", "Great Vibes", cursive',
+                                                        fontSize: '1.8rem',
+                                                        color: '#1e293b',
+                                                        background: 'transparent',
+                                                        border: 'none',
+                                                        textAlign: 'center',
+                                                        width: '90%',
+                                                        outline: 'none'
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') handleSignatureSave(field.id, e.currentTarget.value);
+                                                        if (e.key === 'Escape') setEditingFieldId(null);
+                                                    }}
+                                                    onBlur={(e) => handleSignatureSave(field.id, e.target.value)}
+                                                />
+                                            ) : field.value ? (
+                                                <div style={{ textAlign: 'center' }}>
+                                                    <div style={{
+                                                        fontFamily: '"Brush Script MT", "Cursive", "Great Vibes", cursive',
+                                                        fontSize: '1.8rem',
+                                                        color: '#1e293b',
+                                                        lineHeight: 1
+                                                    }}>
+                                                        {String(field.value).split('\n')[0]}
+                                                    </div>
+                                                    <div style={{ fontSize: '0.6rem', color: '#64748b', marginTop: '4px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                                        Verified &bull; {String(field.value).split('\n')[1] || 'Today'}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div style={{ textAlign: 'center', color: '#94a3b8' }}>
+                                                    {([ContractStatus.CREATED, ContractStatus.SENT, ContractStatus.APPROVED].includes(contract.status)) ? (
+                                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                                                            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'rgba(10, 132, 255, 0.1)', color: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                                <FileSignature size={16} />
+                                                            </div>
+                                                            <div style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--primary)' }}>Click to Sign</div>
+                                                        </div>
+                                                    ) : (
+                                                        <div style={{ fontSize: '0.8rem' }}>Signature Field</div>
+                                                    )}
+                                                </div>
                                             )}
                                         </div>
                                     )}

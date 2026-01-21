@@ -6,8 +6,8 @@ import { ContractStatus } from '../models';
 import type { Contract } from '../models';
 import { getAvailableTransitions, getStatusColor } from '../utils/lifecycle';
 import {
-    Plus, Search, Filter, FileText, CheckCircle,
-    Clock, AlertCircle, ChevronRight, Layout
+    Plus, Search, FileText, ChevronRight,
+    CheckCircle, Clock, Layout
 } from 'lucide-react';
 import Dropdown from '../components/Dropdown';
 
@@ -52,7 +52,7 @@ const Dashboard: React.FC = () => {
     };
 
     const total = contracts.length;
-    const active = contracts.filter(c => [ContractStatus.CREATED, ContractStatus.APPROVED, ContractStatus.SENT].includes(c.status)).length;
+    const active = contracts.filter(c => ([ContractStatus.CREATED, ContractStatus.APPROVED, ContractStatus.SENT] as ContractStatus[]).includes(c.status)).length;
     const signed = contracts.filter(c => c.status === ContractStatus.SIGNED).length;
 
     return (
@@ -152,26 +152,32 @@ const Dashboard: React.FC = () => {
                     <p style={{ color: 'var(--text-secondary)' }}>Create your first contract to get started tracking.</p>
                 </div>
             ) : (
-                <div className="table-container shadow-md">
-                    <table>
+                <div style={{
+                    background: '#151516',
+                    border: '1px solid var(--border)',
+                    borderRadius: '16px',
+                    overflow: 'hidden',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
+                }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                         <thead>
-                            <tr>
-                                <th style={{ width: '30%' }}>Contract Name</th>
-                                <th style={{ width: '20%' }}>Blueprint</th>
-                                <th>Status</th>
-                                <th>Date Created</th>
-                                <th style={{ textAlign: 'right' }}>Actions</th>
+                            <tr style={{ background: 'rgba(255,255,255,0.02)', borderBottom: '1px solid var(--border)' }}>
+                                <th style={{ padding: '1.2rem 1.5rem', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contract Name</th>
+                                <th style={{ padding: '1.2rem 1.5rem', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Blueprint</th>
+                                <th style={{ padding: '1.2rem 1.5rem', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Status</th>
+                                <th style={{ padding: '1.2rem 1.5rem', textAlign: 'left', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Date Created</th>
+                                <th style={{ padding: '1.2rem 1.5rem', textAlign: 'right', color: 'var(--text-secondary)', fontSize: '0.75rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {filteredContracts.map((contract) => {
                                 const transitions = getAvailableTransitions(contract.status);
                                 return (
-                                    <tr key={contract.id} className="group">
-                                        <td>
-                                            <div style={{ fontWeight: 600, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: getStatusColor(contract.status) }}>
-                                                    <FileText size={16} />
+                                    <tr key={contract.id} className="group" style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }}>
+                                        <td style={{ padding: '1.2rem 1.5rem', color: 'var(--text-main)' }}>
+                                            <div style={{ fontWeight: 600, fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: getStatusColor(contract.status) }}>
+                                                    <FileText size={18} />
                                                 </div>
                                                 <div>
                                                     <div>{contract.name}</div>
@@ -179,34 +185,35 @@ const Dashboard: React.FC = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td style={{ color: 'var(--text-secondary)' }}>
+                                        <td style={{ padding: '1.2rem 1.5rem', color: 'var(--text-secondary)' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 {getBlueprintName(contract.blueprintId)}
                                             </div>
                                         </td>
-                                        <td>
+                                        <td style={{ padding: '1.2rem 1.5rem' }}>
                                             <span
                                                 className="badge"
                                                 style={{
                                                     backgroundColor: getStatusColor(contract.status) + '15',
                                                     color: getStatusColor(contract.status),
                                                     border: `1px solid ${getStatusColor(contract.status)}30`,
-                                                    display: 'inline-flex', alignItems: 'center', gap: '6px'
+                                                    display: 'inline-flex', alignItems: 'center', gap: '6px',
+                                                    padding: '4px 10px', borderRadius: '20px'
                                                 }}
                                             >
                                                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'currentColor' }}></div>
                                                 {contract.status}
                                             </span>
                                         </td>
-                                        <td style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                                        <td style={{ padding: '1.2rem 1.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                                             {new Date(contract.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </td>
-                                        <td>
+                                        <td style={{ padding: '1.2rem 1.5rem' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '0.75rem' }}>
                                                 <button
                                                     className="btn-secondary btn-sm"
                                                     onClick={() => navigate(`/contracts/${contract.id}`)}
-                                                    style={{ background: 'transparent', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', gap: '6px' }}
+                                                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', background: 'rgba(255,255,255,0.08)', borderRadius: '8px', border: '1px solid transparent' }}
                                                 >
                                                     View
                                                     <ChevronRight size={14} />

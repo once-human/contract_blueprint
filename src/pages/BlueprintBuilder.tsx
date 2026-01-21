@@ -473,8 +473,8 @@ const BlueprintBuilder: React.FC = () => {
                             <div style={{ paddingTop: '1.5rem', borderTop: '1px solid var(--border)', marginTop: 'auto' }}>
                                 <button
                                     onClick={(e) => handleDeleteField(selectedField.id, e)}
-                                    className="btn-secondary"
-                                    style={{ width: '100%', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444', justifyContent: 'center', gap: '8px' }}
+                                    className="btn-danger"
+                                    style={{ width: '100%' }}
                                 >
                                     <Trash2 size={16} />
                                     Delete Component

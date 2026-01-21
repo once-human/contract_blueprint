@@ -46,16 +46,28 @@ const Header: React.FC = () => {
 
                 {/* User Profile */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                    <button className="icon-btn">
-                        <div style={{
-                            width: '32px', height: '32px',
+                    <button
+                        className="btn-icon-only"
+                        style={{
+                            width: '40px', height: '40px',
+                            background: 'transparent',
+                            border: '1px solid rgba(255,255,255,0.1)',
                             borderRadius: '50%',
-                            background: 'var(--bg-surface-secondary)',
-                            border: '1px solid var(--border)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                            <User size={16} color="var(--text-secondary)" />
-                        </div>
+                            color: 'var(--text-secondary)',
+                            transition: 'all 0.2s'
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(255,255,255,0.05)';
+                            e.currentTarget.style.borderColor = 'var(--text-secondary)';
+                            e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)';
+                            e.currentTarget.style.color = 'var(--text-secondary)';
+                        }}
+                    >
+                        <User size={20} />
                     </button>
                 </div>
             </div>
