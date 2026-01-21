@@ -11,13 +11,36 @@ import {
 } from 'lucide-react';
 import Dropdown from '../components/Dropdown';
 
+import { DEMO_BLUEPRINT, DEMO_CONTRACT, DEMO_BLUEPRINT_SIMPLE, DEMO_CONTRACT_SIMPLE } from '../utils/demoData';
+
 const Dashboard: React.FC = () => {
     const navigate = useNavigate();
-    const { contracts, updateContract } = useContractStore();
-    const { blueprints } = useBlueprintStore();
+    const { contracts, updateContract, addContract, getContractById } = useContractStore();
+    const { blueprints, addBlueprint, getBlueprintById } = useBlueprintStore();
     const [filter, setFilter] = useState<'All' | 'Active' | 'Pending' | 'Signed'>('All');
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<'date-desc' | 'date-asc' | 'name-asc'>('date-desc');
+
+    // Auto-seed Demo Data
+    React.useEffect(() => {
+        // Seed Original Demo
+        const existing = getBlueprintById(DEMO_BLUEPRINT.id);
+        if (!existing) {
+            addBlueprint(DEMO_BLUEPRINT);
+            if (!getContractById(DEMO_CONTRACT.id)) {
+                addContract(DEMO_CONTRACT);
+            }
+        }
+
+        // Seed Simple Demo
+        const existingSimple = getBlueprintById(DEMO_BLUEPRINT_SIMPLE.id);
+        if (!existingSimple) {
+            addBlueprint(DEMO_BLUEPRINT_SIMPLE);
+            if (!getContractById(DEMO_CONTRACT_SIMPLE.id)) {
+                addContract(DEMO_CONTRACT_SIMPLE);
+            }
+        }
+    }, [addBlueprint, getBlueprintById, addContract, getContractById]);
 
     const filteredContracts = contracts
         .filter((contract) => {

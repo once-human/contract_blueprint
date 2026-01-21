@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useContractStore } from '../store/useContractStore';
 import { useBlueprintStore } from '../store/useBlueprintStore';
@@ -144,7 +144,7 @@ const ContractView: React.FC = () => {
                                 position: 'absolute',
                                 left: field.position.x,
                                 top: field.position.y,
-                                width: field.type === 'textBlock' ? '300px' : (field.type === 'checkbox' ? 'auto' : '220px'),
+                                width: field.width ? field.width : (field.type === 'textBlock' ? 'auto' : (field.type === 'checkbox' ? 'auto' : '220px')),
                                 zIndex: 1
                             }}
                         >
@@ -154,7 +154,8 @@ const ContractView: React.FC = () => {
                                     fontSize: '1rem',
                                     lineHeight: '1.6',
                                     fontFamily: 'Georgia, serif', // More document-like
-                                    whiteSpace: 'pre-wrap'
+                                    whiteSpace: 'pre-wrap',
+                                    width: field.width || 'auto' // ensure inner div also respects it if needed
                                 }}>
                                     {field.content}
                                 </div>
@@ -178,10 +179,15 @@ const ContractView: React.FC = () => {
                                             value={field.value as string || ''}
                                             onChange={(e) => handleFieldChange(field.id, e.target.value)}
                                             style={{
-                                                background: '#f8fafc',
-                                                border: '1px solid #cbd5e1',
-                                                boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.05)',
-                                                color: '#1e293b'
+                                                background: 'transparent',
+                                                border: 'none',
+                                                borderBottom: '1px solid #000',
+                                                fontFamily: 'Courier New, monospace', // Typewriter feel
+                                                fontSize: '1rem',
+                                                color: '#000',
+                                                width: '100%',
+                                                padding: '0 4px',
+                                                outline: 'none'
                                             }}
                                             placeholder="Enter text..."
                                         />
@@ -192,7 +198,16 @@ const ContractView: React.FC = () => {
                                             type="date"
                                             value={field.value as string || ''}
                                             onChange={(e) => handleFieldChange(field.id, e.target.value)}
-                                            style={{ background: '#f8fafc', border: '1px solid #cbd5e1', color: '#1e293b' }}
+                                            style={{
+                                                background: 'transparent',
+                                                border: 'none',
+                                                borderBottom: '1px solid #000',
+                                                fontFamily: 'Courier New, monospace',
+                                                fontSize: '1rem',
+                                                color: '#000',
+                                                width: '100%',
+                                                outline: 'none'
+                                            }}
                                         />
                                     )}
 
