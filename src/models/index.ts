@@ -10,6 +10,7 @@ export interface Field {
     options?: string[]; // For select types
     position: { x: number; y: number };
     width?: number | string;
+    hideLabel?: boolean;
 }
 
 export interface Blueprint {

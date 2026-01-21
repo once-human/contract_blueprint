@@ -161,17 +161,19 @@ const ContractView: React.FC = () => {
                                 </div>
                             ) : (
                                 <div>
-                                    <label style={{
-                                        display: 'block',
-                                        fontSize: '0.75rem',
-                                        fontWeight: 600,
-                                        color: '#64748b',
-                                        marginBottom: '4px',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.05em'
-                                    }}>
-                                        {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
-                                    </label>
+                                    {!field.hideLabel && (
+                                        <label style={{
+                                            display: 'block',
+                                            fontSize: '0.75rem',
+                                            fontWeight: 600,
+                                            color: '#64748b',
+                                            marginBottom: '4px',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: '0.05em'
+                                        }}>
+                                            {field.label} {field.required && <span style={{ color: '#ef4444' }}>*</span>}
+                                        </label>
+                                    )}
 
                                     {field.type === 'text' && (
                                         <input
