@@ -7,7 +7,6 @@ export interface Field {
     content?: string; // For textBlock types (static text)
     required?: boolean;
     options?: string[]; // For select types
-    options?: string[]; // For select types
     position: { x: number; y: number };
     width?: number | string;
     hideLabel?: boolean;
