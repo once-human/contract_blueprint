@@ -1,0 +1,214 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+
+:root {
+  /* Apple-style Dark Mode Palette */
+  --bg-app: #050505;
+  /* Slightly lighter than pure black for depth */
+  --bg-surface: #121212;
+  --bg-surface-secondary: #1c1c1e;
+
+  /* Semantic Colors */
+  --primary: #0a84ff;
+  --primary-hover: #0077ed;
+  --primary-subtle: rgba(10, 132, 255, 0.15);
+
+  --accent: #bf5af2;
+  --success: #30d158;
+  --warning: #ffd60a;
+  --error: #ff453a;
+
+  /* Text Colors */
+  --text-main: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-tertiary: rgba(255, 255, 255, 0.45);
+
+  /* Borders & Dividers */
+  --border: rgba(255, 255, 255, 0.1);
+  --border-strong: rgba(255, 255, 255, 0.15);
+
+  /* Spacing */
+  --header-height: 68px;
+  /* Taller header */
+  --max-width: 1400px;
+
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 8px 32px rgba(0, 0, 0, 0.25);
+
+  --transition: 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Glass Header */
+.glass-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--header-height);
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-content {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Navigation Pills */
+.nav-pills {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-surface-secondary);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 7px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all var(--transition);
+}
+
+.nav-item:hover {
+  color: var(--text-main);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-item.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: #151516;
+  /* Slightly lighter than background */
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+/* Inputs & Search */
+input[type="text"],
+input[type="date"],
+select,
+textarea {
+  background: rgba(255, 255, 255, 0.05);
+  /* Glassy background */
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  /* Smoother corners */
+  color: var(--text-main);
+  padding: 0.8rem 1rem;
+  /* More comfortable padding */
+  font-size: 0.95rem;
+  transition: all var(--transition);
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  /* Slightly lighter on focus */
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-subtle);
+  /* Premium focus ring */
+}
+
+input::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Button Refinement */
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.4rem;
+  /* Standard large padding */
+  border-radius: 10px;
+}
+
+.btn-sm {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  border-radius: 8px;
+}
+
+.btn-icon-only {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
